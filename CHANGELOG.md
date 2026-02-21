@@ -1,3 +1,9 @@
+## [1.7.2](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.7.1...v1.7.2) (2026-02-21)
+
+### Bug Fixes
+
+* altera o dialeto do Hibernate para PostgreSQL no perfil de produção ([b0a4cbb](https://github.com/CesarAVB/ai-assistant-rag-service/commit/b0a4cbbadd8410aa7f06b45dcd644a5059c8b06f))
+
 ## [1.7.1](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.7.0...v1.7.1) (2026-02-21)
 
 ### Bug Fixes
