@@ -1,3 +1,9 @@
+## [1.7.1](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.7.0...v1.7.1) (2026-02-21)
+
+### Bug Fixes
+
+* Ativa configurações JPA/Hibernate no perfil de produção. ([42113d4](https://github.com/CesarAVB/ai-assistant-rag-service/commit/42113d4264c2e8458b9d19c4de6cf27919cd5645))
+
 ## [1.7.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.6.0...v1.7.0) (2026-02-21)
 
 ### Features
