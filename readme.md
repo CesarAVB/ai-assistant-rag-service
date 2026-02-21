@@ -1,7 +1,6 @@
 # 🤖 RAG Sales Assistant — Backend
 
-Assistente de vendas com IA generativa utilizando **Spring Boot**, **Spring AI** e **PGVector**.
-Implementa o padrão **RAG (Retrieval-Augmented Generation)** para responder perguntas com base nos documentos da empresa, mantendo memória de conversa por sessão.
+Microservico de assistente de vendas com IA generativa, RAG e memoria de conversas para suporte ao cliente via chat.
 
 ---
 
@@ -16,7 +15,7 @@ Implementa o padrão **RAG (Retrieval-Augmented Generation)** para responder per
 | PGVector | — | Banco vetorial para embeddings |
 | PostgreSQL | — | Banco de dados principal |
 | Apache Tika | — | Leitura de documentos (PDF, DOCX, XLSX, TXT) |
-| Lombok | — | Redução de boilerplate |
+| Lombok | — | Reducao de boilerplate |
 
 ---
 
@@ -24,27 +23,36 @@ Implementa o padrão **RAG (Retrieval-Augmented Generation)** para responder per
 
 ```
 src/main/java/br/com/cesaravb/rag_service/
+├── auth/
+│   ├── AuthController.java                 # Endpoint de login
+│   ├── AuthFilter.java                     # Intercepta e valida o token em cada requisicao
+│   ├── AuthRequest.java                    # DTO de requisicao de login
+│   └── AuthResponse.java                   # DTO de resposta do login
 ├── chat/
-│   ├── ChatController.java         # Endpoint REST do chat
-│   ├── ChatService.java            # Lógica RAG + memória de conversa
-│   ├── ChatRequest.java            # DTO de requisição
-│   └── ChatResponse.java          # DTO de resposta
-├── ingestion/
-│   ├── DocumentImportService.java  # Importação de documentos para o PGVector
-│   └── DocumentImportController.java # Endpoint de upload de documentos
-└── resources/
-    ├── docs/                       # Pasta para documentos automáticos (lidos ao iniciar)
-    └── application.properties      # Configurações da aplicação
+│   ├── ChatController.java                 # Endpoint REST do chat
+│   ├── ChatService.java                    # Logica RAG + memoria de conversa por sessao
+│   ├── ChatRequest.java                    # DTO de requisicao do chat
+│   └── ChatResponse.java                   # DTO de resposta do chat
+└── ingestion/
+    ├── controller/
+    │   ├── DocumentController.java         # Lista e exclui documentos
+    │   └── DocumentImportController.java   # Upload de novos documentos
+    ├── model/
+    │   └── ArquivoImportado.java           # Entidade JPA (tabela ingested_files)
+    ├── repository/
+    │   └── ArquivoImportadoRepository.java # Repositorio JPA
+    └── service/
+        └── DocumentImportService.java      # Importa documentos para o PGVector
 ```
 
 ---
 
-## ⚙️ Configuração
+## ⚙️ Configuracao
 
-### Pré-requisitos
+### Pre-requisitos
 
 - Java 21+
-- PostgreSQL com extensão **pgvector** instalada
+- PostgreSQL com extensao **pgvector** instalada
 - Chave de API da OpenAI
 
 ### `application.properties`
@@ -58,6 +66,10 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/ragdb
 spring.datasource.username=postgres
 spring.datasource.password=postgres
 
+# JPA
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
 # OpenAI
 spring.ai.openai.api-key=${OPENAI_API_KEY}
 spring.ai.openai.chat.options.model=gpt-4o-mini
@@ -67,18 +79,13 @@ spring.ai.openai.embedding.options.model=text-embedding-3-small
 spring.ai.vectorstore.pgvector.initialize-schema=true
 spring.ai.vectorstore.pgvector.dimensions=1536
 spring.ai.vectorstore.pgvector.distance-type=COSINE_DISTANCE
-```
 
-### Banco de dados
+# Auth
+app.auth.password=suaSenhaAqui
+app.auth.token=seuTokenAqui
 
-Execute o script abaixo para criar a tabela de controle de arquivos importados:
-
-```sql
-CREATE TABLE IF NOT EXISTS ingested_files (
-    id          SERIAL PRIMARY KEY,
-    filename    VARCHAR(255) UNIQUE NOT NULL,
-    ingested_at TIMESTAMP DEFAULT NOW()
-);
+# CORS
+app.cors.allowed-origins=https://rag.cesaravb.com.br
 ```
 
 ---
@@ -86,34 +93,59 @@ CREATE TABLE IF NOT EXISTS ingested_files (
 ## 🚀 Como executar
 
 ```bash
-# Clone o repositório
+# Clone o repositorio
 git clone https://github.com/cesaravb/rag-sales-assistant.git
 cd rag-sales-assistant
 
-# Configure a variável de ambiente com sua chave OpenAI
+# Configure a variavel de ambiente com sua chave OpenAI
 export OPENAI_API_KEY=sk-...
 
-# Execute a aplicação
+# Execute a aplicacao
 ./mvnw spring-boot:run
 ```
 
 ---
 
+## 🔐 Autenticacao
+
+A API utiliza autenticacao simples por token estatico configurado no `application.properties`.
+
+**Fluxo:**
+```
+Frontend envia a senha → POST /api/auth/login
+  → Backend valida contra app.auth.password
+  → Retorna o token se correto
+  → Frontend envia o token no header Authorization: Bearer <token>
+  → AuthFilter valida o token em cada requisicao
+```
+
+A rota `/api/auth/login` e publica. Todas as demais exigem o token no header.
+
+---
+
 ## 📡 Endpoints
+
+### Autenticacao
+
+| Metodo | Endpoint | Descricao |
+|---|---|---|
+| POST | `/api/auth/login` | Valida a senha e retorna o token |
 
 ### Chat
 
-```
-POST /api/chat
-Content-Type: application/json
+| Metodo | Endpoint | Descricao |
+|---|---|---|
+| POST | `/api/chat` | Envia mensagem e recebe resposta do assistente |
 
+**Exemplo de requisicao:**
+```json
 {
-  "message": "Quais planos de internet vocês oferecem?",
+  "message": "Quais planos de internet voces oferecem?",
   "conversationId": "uuid-da-sessao"
 }
 ```
 
-**Resposta:**
+**Exemplo de resposta:**
 ```json
 {
   "conversationId": "uuid-da-sessao",
@@ -121,54 +153,45 @@ Content-Type: application/json
 }
 ```
 
----
+### Documentos
 
-### Upload de documentos
-
-```
-POST /api/documents/upload
-Content-Type: multipart/form-data
-
-file: [arquivo]
-```
-
-**Resposta:**
-```
-Arquivo 'planos.pdf' importado com sucesso!
-```
+| Metodo | Endpoint | Descricao |
+|---|---|---|
+| GET | `/api/documents` | Lista todos os documentos importados |
+| POST | `/api/documents/upload` | Faz upload de um novo documento |
+| DELETE | `/api/documents/{id}` | Exclui documento da base de conhecimento |
 
 ---
 
 ## 🔄 Fluxo RAG
 
 ```
-Usuário faz uma pergunta
+Usuario faz uma pergunta
   → QuestionAnswerAdvisor busca chunks relevantes no PGVector
-  → MessageChatMemoryAdvisor injeta histórico da sessão
+  → MessageChatMemoryAdvisor injeta historico da sessao
   → OpenAI gera a resposta com base nos documentos
-  → Resposta retornada ao usuário
+  → Resposta retornada ao usuario
 ```
 
 ---
 
-## 📂 Importação automática de documentos
+## 📂 Importacao automatica de documentos
 
 Coloque arquivos PDF, DOCX, XLSX ou TXT na pasta `src/main/resources/docs/`.
-Ao iniciar a aplicação, o `DocumentImportService` processa automaticamente os arquivos ainda não importados.
+Ao iniciar a aplicacao, o `DocumentImportService` processa automaticamente os arquivos ainda nao importados.
+Cada chunk recebe o metadado `filename` para permitir exclusao precisa no PGVector.
 
 ---
 
-## 🌐 CORS
+## 🌐 Deploy
 
-Configure as origens permitidas no `application.properties`:
-
-```properties
-app.cors.allowed-origins=http://localhost:4200
-```
+- **URL da API:** https://rag-api.cesaravb.com.br
+- **Plataforma:** Coolify
+- **Projeto:** REDELOGNET - RAG ASSISTANT
 
 ---
 
 ## 👤 Autor
 
-**César Augusto Vieira Bezerra**
+**Cesar Augusto Vieira Bezerra**
 [portfolio.cesaraugusto.dev.br](https://portfolio.cesaraugusto.dev.br/)
