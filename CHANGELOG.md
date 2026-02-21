@@ -1,3 +1,9 @@
+## [1.4.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.3.0...v1.4.0) (2026-02-21)
+
+### Features
+
+* Refatora configuração CORS para usar CorsFilter ao invés de ([d6b052c](https://github.com/CesarAVB/ai-assistant-rag-service/commit/d6b052c5c1e239639d5ac4357ef20e4e7a955103))
+
 ## [1.3.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.2.0...v1.3.0) (2026-02-21)
 
 ### Features
