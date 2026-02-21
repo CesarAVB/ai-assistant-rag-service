@@ -1,3 +1,9 @@
+## [1.7.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.6.0...v1.7.0) (2026-02-21)
+
+### Features
+
+* adiciona headers CORS em todas as respostas no AuthFilter ([43d418c](https://github.com/CesarAVB/ai-assistant-rag-service/commit/43d418ce984352fdcc27ed93d4c030f2f311bf3f))
+
 ## [1.6.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.5.0...v1.6.0) (2026-02-21)
 
 ### Features
