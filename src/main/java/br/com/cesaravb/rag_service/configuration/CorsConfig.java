@@ -9,6 +9,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import lombok.extern.slf4j.Slf4j;
+
 // ========================================
 // CorsConfig - Configura as origens permitidas
 // para requisicoes cross-origin do frontend.
@@ -17,6 +19,7 @@ import org.springframework.web.filter.CorsFilter;
 // antes de qualquer validacao de token.
 // ========================================
 @Configuration
+@Slf4j
 public class CorsConfig {
 
     @Value("${app.cors.allowed-origins}")
@@ -29,6 +32,8 @@ public class CorsConfig {
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public CorsFilter corsFilter() {
+    	
+    	log.info("CORS allowed origins: {}", allowedOrigins);
         var config = new CorsConfiguration();
 
         for (String origin : allowedOrigins.split(",")) {
