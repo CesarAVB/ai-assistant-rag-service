@@ -209,14 +209,6 @@ Cada chunk recebe o metadado `filename` para permitir exclusao precisa no PGVect
 
 ---
 
-## 🌐 Deploy
-
-- **URL da API:** https://rag-api.cesaravb.com.br
-- **Plataforma:** Coolify
-- **Projeto:** REDELOGNET - RAG ASSISTANT
-
----
-
 ## 👤 Autor
 
 **Cesar Augusto Vieira Bezerra**
