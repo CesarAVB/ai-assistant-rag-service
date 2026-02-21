@@ -1,3 +1,9 @@
+## [1.5.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.4.0...v1.5.0) (2026-02-21)
+
+### Features
+
+* ajusta a ordem de execução dos filtros de autenticação e CORS ([9522182](https://github.com/CesarAVB/ai-assistant-rag-service/commit/952218286821a01bdfe6dd0dc02e4b5217e2a522))
+
 ## [1.4.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.3.0...v1.4.0) (2026-02-21)
 
 ### Features
