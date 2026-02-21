@@ -1,4 +1,4 @@
-# 🤖 RAG Sales Assistant — Backend
+# 🤖 RAG AI Assistant — Backend
 
 [![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.x-brightgreen.svg)](https://spring.io/projects/spring-boot)
@@ -9,12 +9,6 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > Microservico de assistente de vendas com IA generativa, RAG e memoria de conversas para suporte ao cliente via chat.
-
----
-
-## 📌 Topics
-
-`java` `spring-boot` `spring-ai` `rag` `retrieval-augmented-generation` `openai` `pgvector` `postgresql` `vector-database` `embeddings` `chatbot` `ai` `generative-ai` `apache-tika` `document-processing` `rest-api` `portfolio`
 
 ---
 
