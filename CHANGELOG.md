@@ -1,3 +1,9 @@
+## [1.6.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.5.0...v1.6.0) (2026-02-21)
+
+### Features
+
+* adiciona logging para origens permitidas no CORS ([5a08ec5](https://github.com/CesarAVB/ai-assistant-rag-service/commit/5a08ec51cb24e016ff5497ee8efaffd2f33a35cc))
+
 ## [1.5.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.4.0...v1.5.0) (2026-02-21)
 
 ### Features
