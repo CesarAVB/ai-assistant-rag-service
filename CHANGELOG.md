@@ -1,3 +1,9 @@
+## [1.3.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.2.0...v1.3.0) (2026-02-21)
+
+### Features
+
+* adiciona configurações para modelos GPT-4o-mini e ([51145a8](https://github.com/CesarAVB/ai-assistant-rag-service/commit/51145a8b0641fb96fb2e466e791f8110a95d0384))
+
 ## [1.2.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.1.0...v1.2.0) (2026-02-21)
 
 ### Features
