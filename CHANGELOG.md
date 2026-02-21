@@ -1,3 +1,16 @@
+## [1.1.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.0.0...v1.1.0) (2026-02-21)
+
+### Features
+
+* adiciona AuthController para gerenciamento de autenticação com ([c61cb5e](https://github.com/CesarAVB/ai-assistant-rag-service/commit/c61cb5e9657d171c6caec61d468df248b474361d))
+* adiciona AuthFilter para interceptar requisições e validar token ([d4daf3e](https://github.com/CesarAVB/ai-assistant-rag-service/commit/d4daf3e838eed6818b78214d9d2d0e68b7137b87))
+* adiciona endpoints para listar e excluir documentos importados no ([d1718e7](https://github.com/CesarAVB/ai-assistant-rag-service/commit/d1718e792d2509c2373a1545eadc47182cbc3e7d))
+* adiciona entidade JPA DocumentImport para gerenciamento de ([926044b](https://github.com/CesarAVB/ai-assistant-rag-service/commit/926044b55d7a4b19e1d20a9d9c4ef885c3e6ef34))
+* atualiza comportamento do ChatService para simular atendimento ([643a2c0](https://github.com/CesarAVB/ai-assistant-rag-service/commit/643a2c0620f8ed4e2887739f1779a4b080cb5663))
+* cria DTO AuthRequest para representar o corpo da requisição de ([02caa86](https://github.com/CesarAVB/ai-assistant-rag-service/commit/02caa860ea3b669dd0647e7c33a89aa52fdd5934))
+* cria DTO AuthResponse para representar a resposta do login com o ([9dd0a25](https://github.com/CesarAVB/ai-assistant-rag-service/commit/9dd0a255adf50998e8f5f21d4fe92d696a1ab35c))
+* cria repositório JPA DocumentImportRepository para gerenciar ([e83e0d1](https://github.com/CesarAVB/ai-assistant-rag-service/commit/e83e0d1a76eff7c2bf3d16a0d47349914990a034))
+
 ## 1.0.0 (2026-02-21)
 
 ### Features
