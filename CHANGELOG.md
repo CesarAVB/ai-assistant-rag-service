@@ -1,3 +1,9 @@
+## [1.2.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.1.0...v1.2.0) (2026-02-21)
+
+### Features
+
+* adiciona configurações para PGVECTOR e autenticação no ([20b56af](https://github.com/CesarAVB/ai-assistant-rag-service/commit/20b56af7759dabd231b911e3753f8461fbfb0517))
+
 ## [1.1.0](https://github.com/CesarAVB/ai-assistant-rag-service/compare/v1.0.0...v1.1.0) (2026-02-21)
 
 ### Features
