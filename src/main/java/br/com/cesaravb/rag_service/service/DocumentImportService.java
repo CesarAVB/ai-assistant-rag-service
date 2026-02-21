@@ -6,10 +6,11 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import br.com.cesaravb.rag_service.model.DocumentImport;
+import br.com.cesaravb.rag_service.repository.DocumentImportRepository;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -24,20 +25,15 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class DocumentImportService implements CommandLineRunner {
 
-	// VectorStore é a interface do Spring AI que representa o banco vetorial
-	// (PGVector neste caso).
-	// É aqui que os documentos processados serão armazenados como
-	// vetores/embeddings.
-	private final VectorStore vectorStore;
+	
+	private final VectorStore vectorStore;	// VectorStore é a interface do Spring AI que representa o banco vetorial. Os documentos processados serão armazenados como vetores/embeddings.
+	private final DocumentImportRepository repository;	// Repositório JPA para registrar os arquivos importados e evitar duplicatas
 
-	// JdbcClient é usado para consultar/registrar quais arquivos já foram
-	// importados,
-	// evitando que o mesmo documento seja processado mais de uma vez.
-	private final JdbcClient jdbcClient;
-
-	public DocumentImportService(VectorStore vectorStore, JdbcClient jdbcClient) {
+	
+	// Construtor para injeção de dependências do VectorStore e do DocumentImportRepository
+	public DocumentImportService(VectorStore vectorStore, DocumentImportRepository repository) {
 		this.vectorStore = vectorStore;
-		this.jdbcClient = jdbcClient;
+		this.repository = repository;
 	}
 
 	// ==========================================================================================
@@ -87,43 +83,40 @@ public class DocumentImportService implements CommandLineRunner {
 	// Caso não tenha sido, realiza todo o processo de importação para o PGVector.
 	// ==========================================================================================
 	private void importIfNotExists(Resource resource) {
-		try {
-			final String filename = resource.getFilename();
+	    try {
+	        final String filename = resource.getFilename();
 
-			// Consulta na tabela de controle se esse arquivo já foi importado
-			Integer count = jdbcClient.sql("SELECT COUNT(*) FROM ingested_files WHERE filename = ?").params(filename).query(Integer.class).single();
+	        // Ignora arquivos de controle como .gitkeep
+	        if (filename == null || filename.startsWith(".")) {
+	            return;
+	        }
 
-			if (count == 0) {
-				log.info("Importando arquivo '{}'...", filename);
+	        if (!repository.existsByFilename(filename)) {
+	            log.info("Importando arquivo '{}'...", filename);
 
-				// TikaDocumentReader é um leitor universal do Spring AI.
-				// Ele usa o Apache Tika internamente e suporta automaticamente:
-				// PDF, DOCX, DOC, XLSX, XLS, TXT, HTML, entre outros.
-				// Não é necessário configurar nada além de passar o Resource.
-				var reader = new TikaDocumentReader(resource);
+	            var reader = new TikaDocumentReader(resource);
+	            var splitter = new TokenTextSplitter();
+	            var docs = splitter.apply(reader.get());
 
-				// TokenTextSplitter divide o conteúdo do documento em pedaços menores (chunks).
-				// Isso é necessário porque modelos de IA têm limite de tokens por requisição,
-				// e chunks menores permitem buscas mais precisas no vector store.
-				var splitter = new TokenTextSplitter();
+	            // Salva o filename como metadado em cada chunk
+	            // Permite localizar e excluir os chunks por arquivo depois
+	            docs.forEach(doc -> doc.getMetadata().put("filename", filename));
 
-				// Fluxo completo:
-				// 1. reader.get() → lê o arquivo e retorna List<Document>
-				// 2. splitter.apply() → divide em chunks menores
-				// 3. vectorStore.add() → gera os embeddings e salva no PGVector
-				vectorStore.add(splitter.apply(reader.get()));
+	            vectorStore.add(docs);
 
-				// Registra na tabela de controle que esse arquivo já foi importado
-				jdbcClient.sql("INSERT INTO ingested_files (filename) VALUES (?)").params(filename).update();
+	            // Registra via JPA no lugar do JdbcClient
+	            var arquivoImportado = new DocumentImport();
+	            arquivoImportado.setFilename(filename);
+	            repository.save(arquivoImportado);
 
-				log.info("✅ Arquivo '{}' importado com sucesso!", filename);
+	            log.info("✅ Arquivo '{}' importado com sucesso!", filename);
 
-			} else {
-				log.info("⏭️ Arquivo '{}' já foi importado anteriormente. Pulando...", filename);
-			}
+	        } else {
+	            log.info("⏭️ Arquivo '{}' já foi importado anteriormente. Pulando...", filename);
+	        }
 
-		} catch (Exception e) {
-			log.error("❌ Erro ao importar arquivo '{}'", resource.getFilename(), e);
-		}
+	    } catch (Exception e) {
+	        log.error("❌ Erro ao importar arquivo '{}'", resource.getFilename(), e);
+	    }
 	}
 }
